@@ -2,20 +2,15 @@
 {% import "bootstrap/wtf.html" as wtf %}
 {% import "_macros.html" as macros %}
 
-{% block title %}Dawn of Worlds{% endblock %}
+{% block title %}Furry Yellow Pages{% endblock %}
 
 {% block page_content %}
 <div class="page-header">
     <h1>Hello, {% if current_user.is_authenticated() %}{{ current_user.username }}{% else %}Stranger{% endif %}!</h1>
 </div>
 
-<p> Please pardon the dust. This is a website meant to help play the Dawn of Worlds collaborate worldbuilding roleplaying game.</p>
-<br>Note: You will have to Register, then Log In, to see the main game page</br>
-<br>Additionally you will need to be added to a game to view it.</br>
-<br> This is a work in progress, and server may crash. Lots of stuff shows from an earlier project.</br>
-<br> Please leave Feedback <a href="http://goo.gl/forms/CyuXfxpHLh">here</a>, your assitance is appreciated.</br>
-<br> This website is made by Henry J. Thiel using Python and Flask.</br>
-<br>Dawn of Worlds Ruleset developed by <a href="http://www.clanwebsite.org/games/games.html">http://www.clanwebsite.org/games/games.html</a></br>
+<p> Please pardon the dust. This is the future home of Furry Yellow Pages!</p>
+</br>
 
 {% endblock %}
 

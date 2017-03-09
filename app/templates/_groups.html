@@ -1,0 +1,14 @@
+<ul class="posts">
+    {% for group in groups %}
+    {% if current_user.id == group.owner_id or current_user.is_administrator() or group.approved %}
+    <li class="post">
+        
+        
+        <div class="post-content">
+        {% if not group.approved %}APPLICATION PENDING{% endif %}
+        <a href="{{ url_for('.group_page', groupname=group.username) }}">{{ group.username }}</a>
+        </div>
+    </li>
+    {% endif %}
+    {% endfor %}
+</ul>

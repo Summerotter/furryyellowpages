@@ -16,8 +16,10 @@ class EditProfileForm(Form):
     name = StringField('Real name', validators=[Length(1, 24)])
     location = StringField('Location', validators=[Length(0, 64)])
     about_me = TextAreaField('About me')
+    weasyl = StringField('Weasyl Account Name', validators=[Length(0, 128)])
+    furaffinity = StringField('Furaffinity Account Name', validators=[Length(0, 128)])
+    website = StringField('Website URL', validators=[Length(0, 128)])
     submit = SubmitField('Submit')
-
 
 class EditProfileAdminForm(Form):
     email = StringField('Email', validators=[Required(), Length(1, 64),
@@ -31,6 +33,9 @@ class EditProfileAdminForm(Form):
     name = StringField('Real name', validators=[Length(1, 24)])
     location = StringField('Location', validators=[Length(0, 64)])
     about_me = TextAreaField('About me')
+    weasyl = StringField('Weasyl Account Name', validators=[Length(0, 128)])
+    furaffinity = StringField('Furaffinity Account Name', validators=[Length(0, 128)])
+    website = StringField('Website URL', validators=[Length(0, 128)])
     submit = SubmitField('Submit')
 
     def __init__(self, user, *args, **kwargs):
@@ -52,4 +57,19 @@ class EditProfileAdminForm(Form):
 
 class PostForm(Form):
     body = PageDownField("What's on your mind?", validators=[Required()])
+    submit = SubmitField('Submit')
+
+class GroupApplication(Form):
+    username = StringField('Group Name', validators=[Length(0, 64)])
+    about = PageDownField("Group Info", validators=[Required()])
+    submit = SubmitField('Submit')
+     
+class GroupEdit(Form):
+    about_me = PageDownField("Group Info", validators=[Required()])
+    submit = SubmitField('Submit')
+    
+class GroupEditAdmin(Form):
+    username = StringField('Group Name', validators=[Length(0, 64)])
+    about_me = PageDownField("Group Info", validators=[Required()])
+    approved = BooleanField('Approved')
     submit = SubmitField('Submit')

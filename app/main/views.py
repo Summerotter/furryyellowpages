@@ -2,7 +2,7 @@ from flask import render_template, redirect, url_for, abort, flash, request,\
     current_app, make_response, session
 from flask.ext.login import login_required, current_user
 from . import main
-from .forms import EditProfileForm, EditProfileAdminForm, PostForm
+from .forms import *
 from .. import db
 from ..models import *
 from ..decorators import admin_required, permission_required
@@ -13,7 +13,7 @@ def index():
     return render_template('index.html',)
 
 
-@main.route('/user/<username>')
+@main.route('/user/<username>', methods=['GET', 'POST'])
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
     page = request.args.get('page', 1, type=int)
@@ -21,8 +21,14 @@ def user(username):
         page, per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],
         error_out=False)
     posts = pagination.items
+    form = PostForm()
+    if current_user.username == username and form.validate_on_submit():
+        post = Post(body=form.body.data,author=current_user._get_current_object())
+        db.session.add(post)
+        return redirect(url_for('.user',username=username))
+    groups = user.group_membership.all()
     return render_template('user.html', user=user, posts=posts,
-                           pagination=pagination,)
+                           pagination=pagination,form=form,groups=groups)
 
 
 @main.route('/edit-profile', methods=['GET', 'POST'])
@@ -33,13 +39,53 @@ def edit_profile():
         current_user.name = form.name.data
         current_user.location = form.location.data
         current_user.about_me = form.about_me.data
+        current_user.furaffinity = form.furaffinity.data
+        current_user.weasyl = form.weasyl.data
+        current_user.website = form.website.data
         db.session.add(current_user)
         flash('Your profile has been updated.')
         return redirect(url_for('.user', username=current_user.username))
     form.name.data = current_user.name
     form.location.data = current_user.location
     form.about_me.data = current_user.about_me
+    form.furaffinity.data = current_user.furaffinity
+    form.weasyl.data = current_user.weasyl
+    form.website.data = current_user.website
     return render_template('edit_profile.html', form=form)
+    
+@main.route('/edit-group/<groupname>',methods=['GET', 'POST'])
+@login_required
+def edit_group(groupname):
+    group = Group.query.filter_by(username=groupname).first()
+    form = GroupEdit()
+    if current_user.id != group.owner_id:
+        flash("You are not authorized for this page")
+        return redirect(url_for('.index'))
+    if form.validate_on_submit():
+        group.about_me = form.about_me.data
+        db.session.add(group)
+        flash('Your group has been updated.')
+        return redirect(url_for('.group_page', groupname=groupname))
+    form.about_me.data = group.about_me
+    return render_template('edit_group.html',form=form,group=group,)
+    
+@main.route('/edit-group-admin/<groupname>',methods=['GET', 'POST'])
+@login_required
+@admin_required
+def edit_group_admin(groupname):
+    group = Group.query.filter_by(username=groupname).first()
+    form = GroupEditAdmin()
+    if form.validate_on_submit():
+        group.about_me = form.about_me.data
+        group.username = form.username.data
+        group.approved = form.approved.data
+        db.session.add(group)
+        flash('The group has been updated.')
+        return redirect(url_for('.group'))
+    form.about_me.data = group.about_me
+    form.username.data = group.username
+    form.approved.data = group.approved
+    return render_template('edit_group.html',form=form,group=group,)
 
 
 @main.route('/edit-profile/<int:id>', methods=['GET', 'POST'])
@@ -56,6 +102,9 @@ def edit_profile_admin(id):
         user.name = form.name.data
         user.location = form.location.data
         user.about_me = form.about_me.data
+        user.furaffinity = form.furaffinity.data
+        user.weasyl = form.weasyl.data
+        user.website = form.website.data
         db.session.add(user)
         flash('The profile has been updated.')
         return redirect(url_for('.user', username=user.username))
@@ -66,6 +115,9 @@ def edit_profile_admin(id):
     form.name.data = user.name
     form.location.data = user.location
     form.about_me.data = user.about_me
+    form.furaffinity.data = user.furaffinity
+    form.weasyl.data = user.weasyl
+    form.website.data = user.website
     return render_template('edit_profile.html', form=form, user=user)
 
 
@@ -172,3 +224,58 @@ def show_followed():
     resp = make_response(redirect(url_for('.index')))
     resp.set_cookie('show_followed', '1', max_age=30*24*60*60)
     return resp
+    
+@main.route('/group')
+def group():
+    groups = Group.query.all()
+    return render_template("groups.html", groups=groups)
+
+@main.route('/groupapplication', methods=['GET', 'POST'])
+@login_required
+def group_application():
+    form = GroupApplication()
+    if form.validate_on_submit():
+        username = form.username.data
+        about = form.about.data
+        owner_id = current_user.id
+        group = Group(owner_id=owner_id,username=username,about_me=about)
+        db.session.add(group)
+        flash('Your application has been made.')
+        return redirect(url_for('.group'))
+    return render_template('group_application.html', form=form)
+    
+@main.route('/grouppage/<groupname>')
+def group_page(groupname):
+    group = Group.query.filter_by(username=groupname).first()
+    users = group.members.all()
+    return render_template('group_page.html',group=group,users=users)
+    
+@main.route('/follow_group/<groupname>')
+@login_required
+@permission_required(Permission.FOLLOW)
+def follow_group(groupname):
+    group = Group.query.filter_by(username=groupname).first()
+    if group is None:
+        flash('Invalid group.')
+        return redirect(url_for('.index'))
+    if current_user.is_following_group(group):
+        flash('You are already following this group.')
+        return redirect(url_for('.group_page', groupname=groupname))
+    current_user.follow_group(group)
+    flash('You are now following %s.' % groupname)
+    return redirect(url_for('.group_page', groupname=groupname))
+    
+@main.route('/unfollow_group/<groupname>')
+@login_required
+@permission_required(Permission.FOLLOW)
+def unfollow_group(groupname):
+    group = Group.query.filter_by(username=groupname).first()
+    if group is None:
+        flash('Invalid group.')
+        return redirect(url_for('.index'))
+    if not current_user.is_following_group(group):
+        flash('You are already not following this group.')
+        return redirect(url_for('.group_page', groupname=groupname))
+    current_user.unfollow_group(group)
+    flash('You are no longer following %s.' % groupname)
+    return redirect(url_for('.group_page', groupname=groupname))

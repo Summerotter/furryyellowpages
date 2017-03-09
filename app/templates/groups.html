@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% import "_macros.html" as macros %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}Furry Yellow Pages - Group Listings{% endblock %}
+
+{% block page_content %}
+<p>Start a group <a href="{{ url_for('main.group_application') }}">Here</a></p>
+
+{% include '_groups.html' %}
+{% endblock %}

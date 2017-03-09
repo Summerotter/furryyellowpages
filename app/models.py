@@ -50,11 +50,11 @@ class Role(db.Model):
         return '<Role %r>' % self.name
 
 
-# player_world_table = db.Table('player_worlds', db.Model.metadata,
-                               # db.Column('player_id', db.Integer,
-                                         # db.ForeignKey('users.id')),
-                               # db.Column('world_id', db.Integer,
-                                         # db.ForeignKey('world.id')))
+group_membership_table = db.Table('group_users', db.Model.metadata,
+                                    db.Column('user_id', db.Integer,   
+                                    db.ForeignKey('users.id')),
+                                    db.Column('group_id', db.Integer,
+                                    db.ForeignKey('group.id')))
     
 
 class User(UserMixin, db.Model):
@@ -71,7 +71,15 @@ class User(UserMixin, db.Model):
     member_since = db.Column(db.DateTime(), default=datetime.utcnow)
     last_seen = db.Column(db.DateTime(), default=datetime.utcnow)
     avatar_hash = db.Column(db.String(32))
+    furaffinity = db.Column(db.String(128))
+    weasyl = db.Column(db.String(128))
+    website = db.Column(db.String(128))
     posts = db.relationship('Post', backref='author', lazy='dynamic')
+    owned_groups = db.relationship('Group', backref='owner', lazy='dynamic')
+    group_membership = db.relationship('Group',
+                             secondary=group_membership_table,
+                             backref =db.backref('members', lazy='dynamic'),
+                             lazy='dynamic')
 
     @staticmethod
     def generate_fake(count=100):
@@ -200,6 +208,18 @@ class User(UserMixin, db.Model):
     def get_id(self):
         return self.id
         
+    def is_following_group(self,group):
+        return self.group_membership.filter_by(id=group.id).first() is not None
+        
+    def follow_group(self, group):
+        if group not in self.group_membership:
+            self.group_membership.append(group)
+        
+    def unfollow_group(self, group):
+        if group in self.group_membership:
+            self.group_membership.remove(group)
+    
+        
 
 
 class AnonymousUser(AnonymousUserMixin):
@@ -216,6 +236,14 @@ login_manager.anonymous_user = AnonymousUser
 @login_manager.user_loader
 def load_user(user_id):
    return User.query.get(user_id)
+   
+class Group(db.Model):
+    __tablename__ = 'group'
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(64), unique=True, index=True)
+    about_me = db.Column(db.Text())
+    owner_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    approved = db.Column(db.Boolean, default=False)
 
 
 class Post(db.Model):
