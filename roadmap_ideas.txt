@@ -1,0 +1,18 @@
+Short Term ToDo: 
+
+- Impliment Services (copy Media files, change names)
+
+- Add 'Delete' option for group, media, service
+- Add "Hide Profile" option (direct link redirects to index, no longer appears in results)
+- Add "Remove" and "Block" functions for groups
+- Add 'premium' and 'premium_expires' attributes for User (Maybe just the expire, and compare to 'now'?)
+- Add 'Small Ad' attribute for User
+- Front Page should display randomly selected 'small ads'
+- Enable Rich Text for user profiles
+
+Long Term:
+
+-Figure out how to display the filter system
+-Better layout
+-Seperated control panel for groups and admins?
+-Admin notifcation of group application?

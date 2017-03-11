@@ -1,0 +1,18 @@
+<table>
+    {% for row in media|batch(4) %}
+    <tr>
+    {% for group in row %}
+    {% if current_user.is_administrator() or group.visible %}
+    <td>
+        
+        
+        <div class="post-content">
+        {% if not group.visible %}HIDDEN{% endif %}
+        <a href="{{ url_for('.media_page', mediatype=group.username) }}">{{ group.username }}</a>
+        </div>
+    </td>
+    {% endif %}
+    {% endfor %}
+    </tr>
+    {% endfor %}
+</table>

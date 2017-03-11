@@ -55,7 +55,18 @@ group_membership_table = db.Table('group_users', db.Model.metadata,
                                     db.ForeignKey('users.id')),
                                     db.Column('group_id', db.Integer,
                                     db.ForeignKey('group.id')))
-    
+
+media_offered_table = db.Table('media_offered', db.Model.metadata,
+                                    db.Column('user_id', db.Integer,   
+                                    db.ForeignKey('users.id')),
+                                    db.Column('media_id', db.Integer,
+                                    db.ForeignKey('media.id')))
+
+service_offered_table = db.Table('service_offered', db.Model.metadata,
+                                    db.Column('user_id', db.Integer,   
+                                    db.ForeignKey('users.id')),
+                                    db.Column('service_id', db.Integer,
+                                    db.ForeignKey('service.id')))                                    
 
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
@@ -78,6 +89,14 @@ class User(UserMixin, db.Model):
     owned_groups = db.relationship('Group', backref='owner', lazy='dynamic')
     group_membership = db.relationship('Group',
                              secondary=group_membership_table,
+                             backref =db.backref('members', lazy='dynamic'),
+                             lazy='dynamic')
+    media_offered = db.relationship('Media',
+                             secondary=media_offered_table,
+                             backref =db.backref('members', lazy='dynamic'),
+                             lazy='dynamic')
+    service_offered = db.relationship('Service',
+                             secondary=service_offered_table,
                              backref =db.backref('members', lazy='dynamic'),
                              lazy='dynamic')
 
@@ -219,7 +238,16 @@ class User(UserMixin, db.Model):
         if group in self.group_membership:
             self.group_membership.remove(group)
     
+    def is_offering_media(self,media):
+        return self.media_offered.filter_by(id=media.id).first() is not None
         
+    def offer_media(self, media):
+        if media not in self.media_offered:
+            self.media_offered.append(media)
+        
+    def remove_media(self, media):
+        if media in self.media_offered:
+            self.media_offered.remove(media)      
 
 
 class AnonymousUser(AnonymousUserMixin):
@@ -244,6 +272,21 @@ class Group(db.Model):
     about_me = db.Column(db.Text())
     owner_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     approved = db.Column(db.Boolean, default=False)
+    group_type = db.Column(db.Integer, default=0)
+
+class Media(db.Model):
+    __tablename__ = 'media'
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(64), unique=True, index=True)
+    description = db.Column(db.Text())
+    visible = db.Column(db.Boolean, default=False)
+    
+class Service(db.Model):
+    __tablename__ = 'service'
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(64), unique=True, index=True)
+    description = db.Column(db.Text())
+    visible = db.Column(db.Boolean, default=False)
 
 
 class Post(db.Model):

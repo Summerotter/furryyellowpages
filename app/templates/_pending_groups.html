@@ -1,6 +1,6 @@
-<p>Active Groups</p>
+<p>Pending or Deactivated Groups</p>
 <table>
-    {% for row in groups|batch(4) %}
+    {% for row in pending_groups|batch(4) %}
     <tr>
     {% for group in row %}
     <td>

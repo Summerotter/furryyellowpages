@@ -1,4 +1,3 @@
-<p>Active Groups</p>
 <table>
     {% for row in groups|batch(4) %}
     <tr>

@@ -17,6 +17,10 @@
 <!--        <p>Member since {{ moment(user.member_since).format('L') }}. Last seen {{ moment(user.last_seen).fromNow() }}.</p>
         <p>{{ user.posts.count() }} blog posts.<br> -->
         {{ user.group_membership.count() }} group memberships.</p>
+        <p>Media I work with:<br>
+        {% include '_media.html' %}
+        </p>
+        
         <p><h1>Where can I be found?</h1><br>
         {% if user.website %}Website: <a href="http://{{ user.website }}">{{user.website}}</a>{% endif %}<br>
         {% if user.furaffinity %}Furaffinity Account: <a href="https://www.furaffinity.net/user/{{ user.furaffinity }}">{{user.furaffinity}}</a>{% endif %}<br>

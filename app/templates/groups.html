@@ -8,4 +8,5 @@
 <p>Start a group <a href="{{ url_for('main.group_application') }}">Here</a></p>
 
 {% include '_groups.html' %}
+{% if current_user.is_administrator() %}{% include '_pending_groups.html' %}{% endif %}
 {% endblock %}

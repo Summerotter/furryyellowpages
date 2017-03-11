@@ -22,13 +22,15 @@ def user(username):
         error_out=False)
     posts = pagination.items
     form = PostForm()
-    if current_user.username == username and form.validate_on_submit():
-        post = Post(body=form.body.data,author=current_user._get_current_object())
-        db.session.add(post)
-        return redirect(url_for('.user',username=username))
+    if current_user.can(Permission.WRITE_ARTICLES):
+        if current_user.username == username and form.validate_on_submit():
+            post = Post(body=form.body.data,author=current_user._get_current_object())
+            db.session.add(post)
+            return redirect(url_for('.user',username=username))
     groups = user.group_membership.all()
+    media = user.media_offered.all()
     return render_template('user.html', user=user, posts=posts,
-                           pagination=pagination,form=form,groups=groups)
+                           pagination=pagination,form=form,groups=groups,media=media)
 
 
 @main.route('/edit-profile', methods=['GET', 'POST'])
@@ -224,11 +226,15 @@ def show_followed():
     resp = make_response(redirect(url_for('.index')))
     resp.set_cookie('show_followed', '1', max_age=30*24*60*60)
     return resp
+
+    
+### Groups ###    
     
 @main.route('/group')
 def group():
-    groups = Group.query.all()
-    return render_template("groups.html", groups=groups)
+    groups = Group.query.filter_by(approved=True).all()
+    pending_groups = Group.query.filter_by(approved=False).all()
+    return render_template("groups.html", groups=groups,pending_groups=pending_groups,)
 
 @main.route('/groupapplication', methods=['GET', 'POST'])
 @login_required
@@ -279,3 +285,78 @@ def unfollow_group(groupname):
     current_user.unfollow_group(group)
     flash('You are no longer following %s.' % groupname)
     return redirect(url_for('.group_page', groupname=groupname))
+    
+### Media ###
+
+@main.route('/media')
+def media():
+    media = Media.query.all()
+    return render_template("media.html", media=media)
+
+@main.route('/create-media', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def create_media():
+    form = GroupApplication()
+    if form.validate_on_submit():
+        username = form.username.data
+        about = form.about.data
+        media = Media(username=username,description=about)
+        db.session.add(media)
+        flash('Your application has been made.')
+        return redirect(url_for('.media'))
+    return render_template('group_application.html', form=form)
+    
+@main.route('/edit-media/<mediatype>',methods=['GET', 'POST'])
+@login_required
+@admin_required
+def edit_media(mediatype):
+    media = Media.query.filter_by(username=mediatype).first()
+    form = GroupEditAdmin()
+    if form.validate_on_submit():
+        group.description = form.about_me.data
+        group.username = form.username.data
+        group.visible = form.approved.data
+        db.session.add(group)
+        flash('Your group has been updated.')
+        return redirect(url_for('.media_page', mediatype=mediatype))
+    form.about_me.data = group.description
+    form.username.data = group.username
+    form.approved.data = group.visible
+    return render_template('edit_group.html',form=form,media=media,)
+    
+@main.route('/media/<mediatype>')
+def media_page(mediatype):
+    group = Media.query.filter_by(username=mediatype).first()
+    users = group.members.all()
+    return render_template('media_page.html',group=group,users=users)
+    
+@main.route('/offer_media/<mediatype>')
+@login_required
+@permission_required(Permission.FOLLOW)
+def offer_media(mediatype):
+    group = Media.query.filter_by(username=mediatype).first()
+    if group is None:
+        flash('Invalid media.')
+        return redirect(url_for('.index'))
+    if current_user.is_offering_media(group):
+        flash('You are already offering this media.')
+        return redirect(url_for('.media_page', mediatype=mediatype))
+    current_user.offer_media(group)
+    flash('You are now offering %s.' % mediatype)
+    return redirect(url_for('.media_page', mediatype=mediatype))
+    
+@main.route('/remove_media/<mediatype>')
+@login_required
+@permission_required(Permission.FOLLOW)
+def remove_media(mediatype):
+    group = Media.query.filter_by(username=mediatype).first()
+    if group is None:
+        flash('Invalid Media.')
+        return redirect(url_for('.index'))
+    if not current_user.is_offering_media(group):
+        flash('You are already not offering this media.')
+        return redirect(url_for('.media_page', mediatype=mediatype))
+    current_user.remove_media(group)
+    flash('You are no longer offering %s.' % mediatype)
+    return redirect(url_for('.media_page', mediatype=mediatype))
