@@ -1,6 +1,6 @@
 Dear {{ user.username }},
 
-Welcome to Dawn of Worlds!
+Welcome to Furry Yellow Pages!
 
 To confirm your account please click on the following link:
 
