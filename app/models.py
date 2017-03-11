@@ -279,14 +279,14 @@ class Media(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), unique=True, index=True)
     description = db.Column(db.Text())
-    visible = db.Column(db.Boolean, default=False)
+    visible = db.Column(db.Boolean, default=True)
     
 class Service(db.Model):
     __tablename__ = 'service'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), unique=True, index=True)
     description = db.Column(db.Text())
-    visible = db.Column(db.Boolean, default=False)
+    visible = db.Column(db.Boolean, default=True)
 
 
 class Post(db.Model):

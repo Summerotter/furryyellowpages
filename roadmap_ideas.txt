@@ -9,6 +9,9 @@ Short Term ToDo:
 - Add 'Small Ad' attribute for User
 - Front Page should display randomly selected 'small ads'
 - Enable Rich Text for user profiles
+- Creators of Groups need to be following automatically. Cannot unfollow?
+- Change group ownership feature
+- Fix HTML to remove DoW references
 
 Long Term:
 

@@ -226,6 +226,12 @@ def show_followed():
     resp = make_response(redirect(url_for('.index')))
     resp.set_cookie('show_followed', '1', max_age=30*24*60*60)
     return resp
+    
+@main.route("/users")
+def user_list():
+    players = User.query.all()
+    return render_template("user_list.html",
+                           players = players,)
 
     
 ### Groups ###    
@@ -314,16 +320,16 @@ def edit_media(mediatype):
     media = Media.query.filter_by(username=mediatype).first()
     form = GroupEditAdmin()
     if form.validate_on_submit():
-        group.description = form.about_me.data
-        group.username = form.username.data
-        group.visible = form.approved.data
-        db.session.add(group)
+        media.description = form.about_me.data
+        media.username = form.username.data
+        media.visible = form.approved.data
+        db.session.add(media)
         flash('Your group has been updated.')
         return redirect(url_for('.media_page', mediatype=mediatype))
-    form.about_me.data = group.description
-    form.username.data = group.username
-    form.approved.data = group.visible
-    return render_template('edit_group.html',form=form,media=media,)
+    form.about_me.data = media.description
+    form.username.data = media.username
+    form.approved.data = media.visible
+    return render_template('edit_media.html',form=form,media=media,)
     
 @main.route('/media/<mediatype>')
 def media_page(mediatype):
