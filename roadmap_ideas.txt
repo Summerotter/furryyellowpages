@@ -11,7 +11,7 @@ Short Term ToDo:
 - Enable Rich Text for user profiles
 - Creators of Groups need to be following automatically. Cannot unfollow?
 - Change group ownership feature
-- Fix HTML to remove DoW references
+
 
 Long Term:
 

@@ -10,7 +10,12 @@ from ..decorators import admin_required, permission_required
 
 @main.route('/', methods=['GET', 'POST'])
 def index():
-    return render_template('index.html',)
+    premium_ads = User.query.filter_by(premium=True).all()
+    print(premium_ads)
+    while len(premium_ads) > 4:
+        del premium_ads[random.randint(0,len(premium_ads)-1)]
+    print(premium_ads)
+    return render_template('index.html',premium_ads=premium_ads)
 
 
 @main.route('/user/<username>', methods=['GET', 'POST'])
@@ -50,6 +55,7 @@ def edit_profile():
         current_user.furaffinity = form.furaffinity.data
         current_user.weasyl = form.weasyl.data
         current_user.website = form.website.data
+        current_user.short_ad = form.short_ad.data
         flash('Your profile has been updated.')
         db.session.add(current_user)
         
@@ -57,6 +63,7 @@ def edit_profile():
     form.name.data = current_user.name
     form.location.data = current_user.location
     form.about_me.data = current_user.about_me
+    form.short_ad.data = current_user.short_ad
     form.furaffinity.data = current_user.furaffinity
     form.weasyl.data = current_user.weasyl
     form.website.data = current_user.website
@@ -149,6 +156,7 @@ def edit_profile_admin(id):
         user.about_me = form.about_me.data
         user.furaffinity = form.furaffinity.data
         user.weasyl = form.weasyl.data
+        user.short_ad = form.short_ad.data
         user.website = form.website.data
         db.session.add(user)
         flash('The profile has been updated.')
@@ -158,6 +166,7 @@ def edit_profile_admin(id):
     form.confirmed.data = user.confirmed
     form.role.data = user.role_id
     form.name.data = user.name
+    form.short_ad.data = user.short_ad
     form.location.data = user.location
     form.about_me.data = user.about_me
     form.furaffinity.data = user.furaffinity
