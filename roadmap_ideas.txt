@@ -5,12 +5,14 @@ Short Term ToDo:
 - Add 'Delete' option for group, media, service
 - Add "Hide Profile" option (direct link redirects to index, no longer appears in results)
 - Add "Remove" and "Block" functions for groups
-- Add 'premium' and 'premium_expires' attributes for User (Maybe just the expire, and compare to 'now'?)
-- Add 'Small Ad' attribute for User
+
 - Front Page should display randomly selected 'small ads'
 - Enable Rich Text for user profiles
 - Creators of Groups need to be following automatically. Cannot unfollow?
 - Change group ownership feature
+
+
+----PAGE 159----
 
 
 Long Term:

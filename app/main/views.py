@@ -6,15 +6,14 @@ from .forms import *
 from .. import db
 from ..models import *
 from ..decorators import admin_required, permission_required
+from random import randint
 
 
 @main.route('/', methods=['GET', 'POST'])
 def index():
     premium_ads = User.query.filter_by(premium=True).all()
-    print(premium_ads)
     while len(premium_ads) > 4:
-        del premium_ads[random.randint(0,len(premium_ads)-1)]
-    print(premium_ads)
+        del premium_ads[randint(0,len(premium_ads)-1)]
     return render_template('index.html',premium_ads=premium_ads)
 
 

@@ -1,19 +1,21 @@
+<div>
 <table>
     {% for row in premium_ads|batch(2) %}
     <tr>
     {% for ad in row %}
     <td>
-        <div class="post-content">
+        
         {{ad.short_ad}}
         
     </td>
     <td>
 
         <a href="{{ url_for('.user', username=ad.username) }}">{{ ad.username }}</a>
-        </div>
+        
     </td>
 
     {% endfor %}
     </tr>
     {% endfor %}
 </table>
+</div>
