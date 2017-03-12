@@ -1,13 +1,13 @@
 <table>
     {% for row in media|batch(4) %}
     <tr>
-    {% for group in row %}
+    {% for media in row %}
     
     <td>
         
         
         <div class="post-content">
-        <a href="{{ url_for('.media_page', mediatype=group.username) }}">{{ group.username }}</a>
+        <input type="checkbox" name="{{media.username}}" value="follow" checked><a href="{{ url_for('.media_page', mediatype=media.username) }}">{{ media.username }}</a>
         </div>
     </td>
 

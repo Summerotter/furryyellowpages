@@ -1,6 +1,6 @@
 from flask.ext.wtf import Form
 from wtforms import StringField, TextAreaField, BooleanField, SelectField,\
-    SubmitField
+    SubmitField, HiddenField
 from wtforms.validators import Required, Length, Email, Regexp
 from wtforms import ValidationError
 from flask.ext.pagedown.fields import PageDownField
@@ -10,9 +10,13 @@ from ..models import Role, User
 class NameForm(Form):
     name = StringField('What is your name?', validators=[Required()])
     submit = SubmitField('Submit')
+    
+class ActivateForm(Form):
+    deactivate = SelectField('Deactivate', coerce=int,  choices=[(0,"Enabled"),(1,"Disabled"),])
 
 
 class EditProfileForm(Form):
+    
     name = StringField('Real name', validators=[Length(1, 24)])
     location = StringField('Location', validators=[Length(0, 64)])
     about_me = TextAreaField('About me')
@@ -72,4 +76,7 @@ class GroupEditAdmin(Form):
     username = StringField('Group Name', validators=[Length(0, 64)])
     about_me = PageDownField("Group Info", validators=[Required()])
     approved = BooleanField('Approved')
+    submit = SubmitField('Submit')
+    
+class UpdateUserMedia(Form):
     submit = SubmitField('Submit')

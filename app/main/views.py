@@ -16,6 +16,12 @@ def index():
 @main.route('/user/<username>', methods=['GET', 'POST'])
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
+    if user.role.name == "Disabled" and current_user.id != user.id:
+        flash("This user has disabled their account their account.")
+        return redirect(url_for('.index'))
+    if user.role.name == "Banned":
+        flash("This user has been banned.")
+        return redirect(url_for('.index'))
     page = request.args.get('page', 1, type=int)
     pagination = user.posts.order_by(Post.timestamp.desc()).paginate(
         page, per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],
@@ -44,8 +50,9 @@ def edit_profile():
         current_user.furaffinity = form.furaffinity.data
         current_user.weasyl = form.weasyl.data
         current_user.website = form.website.data
-        db.session.add(current_user)
         flash('Your profile has been updated.')
+        db.session.add(current_user)
+        
         return redirect(url_for('.user', username=current_user.username))
     form.name.data = current_user.name
     form.location.data = current_user.location
@@ -54,6 +61,42 @@ def edit_profile():
     form.weasyl.data = current_user.weasyl
     form.website.data = current_user.website
     return render_template('edit_profile.html', form=form)
+    
+@main.route('/edit-profile/disable',methods=['GET','POST'])
+@login_required
+def disable_account():
+    form = ActivateForm()
+    if form.validate_on_submit():
+        if current_user.role.name not in ["Banned","Disabled"]:
+            current_user.role = Role.query.filter_by(name="Disabled").first()
+            flash("You have disabled your account.")
+            return redirect(url_for(".index"))
+        elif current_user.role.name == "Disabled":
+            current_user.role = Role.query.filter_by(name="User").first()
+            flash("You have reactivated your account.")
+            return redirect(url_for(".index"))
+
+@main.route('/manage-media',methods=['GET','POST'])
+@login_required
+def user_media():
+    all_media = Media.query.all()
+    offered_media = current_user.media_offered.all()
+    unoffered_media = []
+    for i in all_media:
+        if i not in offered_media:
+            unoffered_media.append(i)
+    form = UpdateUserMedia()
+    
+    if form.validate_on_submit():
+        data = request.form
+        for media in all_media:
+            if media.username in data:
+                current_user.offer_media(media)
+            else:
+                current_user.remove_media(media)
+        flash("Updated your media offerings")
+        return redirect(url_for('.user_media'))
+    return render_template('user_options.html',media=offered_media,unoffered_media=unoffered_media,form=form)
     
 @main.route('/edit-group/<groupname>',methods=['GET', 'POST'])
 @login_required
@@ -244,6 +287,7 @@ def group():
 
 @main.route('/groupapplication', methods=['GET', 'POST'])
 @login_required
+@permission_required(Permission.FOLLOW)
 def group_application():
     form = GroupApplication()
     if form.validate_on_submit():
@@ -296,8 +340,9 @@ def unfollow_group(groupname):
 
 @main.route('/media')
 def media():
-    media = Media.query.all()
-    return render_template("media.html", media=media)
+    media = Media.query.filter_by(visible=True).all()
+    hidden_media = Media.query.filter_by(visible=False).all()
+    return render_template("media.html", media=media,hidden_media=hidden_media)
 
 @main.route('/create-media', methods=['GET', 'POST'])
 @login_required

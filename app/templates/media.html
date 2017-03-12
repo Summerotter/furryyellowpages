@@ -6,8 +6,9 @@
 
 {% block page_content %}
 {% if current_user.is_administrator() %}
-<p>Start a group <a href="{{ url_for('main.create_media') }}">Here</a></p>
+<p>Create New Media <a href="{{ url_for('main.create_media') }}">Here</a></p>
 {% endif %}
 
 {% include '_media.html' %}
+{% if current_user.is_administrator() %}{% include '_pending_media.html' %}{% endif %}
 {% endblock %}

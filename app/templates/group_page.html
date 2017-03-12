@@ -9,9 +9,9 @@
     <h1>{{ group.username }}
         {% if current_user.can(Permission.FOLLOW) %}
         {% if current_user.is_following_group(group) %}
-         <a class="btn btn-default" href="{{ url_for('.unfollow_group',groupname=group.username) }}">Unfollow</a>
+         <a class="btn btn-default" href="{{ url_for('.unfollow_group',groupname=group.username) }}">Leave Group</a>
          {% else %}
-         <a class="btn btn-default" href="{{ url_for('.follow_group',groupname=group.username) }}">Follow</a>
+         <a class="btn btn-default" href="{{ url_for('.follow_group',groupname=group.username) }}">Join Group</a>
          {% endif %}
         {% endif %}
     </h1>
