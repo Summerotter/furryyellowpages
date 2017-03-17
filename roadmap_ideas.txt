@@ -21,3 +21,7 @@ Long Term:
 -Better layout
 -Seperated control panel for groups and admins?
 -Admin notifcation of group application?
+
+---|---
+
+Media - Media are meant to be large genres. Examples would be Traditional Pen and Pencil, Digital 2D, Digital Scultpure, Traditional Animation, Digital Animation, Watercolors, etc. There is no need to break down Traditional into Sketch, Line, Color, Shading, etc. 

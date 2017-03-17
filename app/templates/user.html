@@ -13,20 +13,12 @@
         {% if current_user.is_administrator() %}
         <p><a href="mailto:{{ user.email }}">{{ user.email }}</a></p>
         {% endif %}
-        {% if user.about_me %}
-            {% if user.about_me_html %}
-                {{ user.about_me_html | safe }}
-            {% else %}
-                <p>{{ user.about_me }}</p>
-            {% endif %}
-        {% endif %}
+
+        
+
 <!--        <p>Member since {{ moment(user.member_since).format('L') }}. Last seen {{ moment(user.last_seen).fromNow() }}.</p>
         <p>{{ user.posts.count() }} blog posts.<br> -->
-        {{ user.group_membership.count() }} group memberships.</p>
-        {% if user.media_offered %}<p>Media I work with:<br>
-        {% include '_media.html' %}
-        </p>
-        {% endif %}
+        <!--- {{ user.group_membership.count() }} group memberships.</p> -->
         <p><h1>Where can I be found?</h1><br>
         {% if user.website %}Website: <a href="http://{{ user.website }}">{{user.website}}</a>{% endif %}<br>
         {% if user.furaffinity %}Furaffinity Account: <a href="https://www.furaffinity.net/user/{{ user.furaffinity }}">{{user.furaffinity}}</a>{% endif %}<br>
@@ -44,6 +36,20 @@
         </p>
     </div>
 </div>
+        {% if user.about_me %}
+            <div class="post-content">
+            {% if user.about_me_html %}
+                {{ user.about_me_html | safe }}
+            {% else %}
+                <p>{{ user.about_me }}</p>
+            {% endif %}
+            </div>
+        {% endif %}
+            {% if user.media_offered %}
+            <p>Media I work with:<br>
+            {% include '_media.html' %}
+            </p>
+        {% endif %}
 <p>Group Memberships</p>
 {% include '_groups.html' %}
 <!-- {% if user == current_user %}

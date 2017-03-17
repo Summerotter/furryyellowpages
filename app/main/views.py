@@ -37,8 +37,8 @@ def user(username):
             post = Post(body=form.body.data,author=current_user._get_current_object())
             db.session.add(post)
             return redirect(url_for('.user',username=username))
-    groups = user.group_membership.all()
-    media = user.media_offered.all()
+    groups = user.group_membership.filter(Group.approved==True).all()
+    media = user.media_offered.order_by(Media.username).all()
     return render_template('user.html', user=user, posts=posts,
                            pagination=pagination,form=form,groups=groups,media=media)
 
@@ -304,6 +304,7 @@ def group_application():
         owner_id = current_user.id
         group = Group(owner_id=owner_id,username=username,about_me=about)
         db.session.add(group)
+        current_user.follow_group(group)
         flash('Your application has been made.')
         return redirect(url_for('.group'))
     return render_template('group_application.html', form=form)
@@ -348,8 +349,8 @@ def unfollow_group(groupname):
 
 @main.route('/media')
 def media():
-    media = Media.query.filter_by(visible=True).all()
-    hidden_media = Media.query.filter_by(visible=False).all()
+    media = Media.query.filter_by(visible=True).order_by(Media.username).all()
+    hidden_media = Media.query.filter_by(visible=False).order_by(Media.username).all()
     return render_template("media.html", media=media,hidden_media=hidden_media)
 
 @main.route('/create-media', methods=['GET', 'POST'])
