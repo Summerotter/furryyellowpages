@@ -3,12 +3,12 @@ Short Term ToDo:
 - Impliment Services (copy Media files, change names)
 
 - Add 'Delete' option for group, media, service
-- Add "Hide Profile" option (direct link redirects to index, no longer appears in results)
-- Add "Remove" and "Block" functions for groups
+- Add "Hide Profile" option (direct link redirects to index, no longer appears in results)(Partially implimented)
+- Add "Remove" and "Block" functions for group admins (Maybe the same thing. Go to User page, it'll have a "Remove from Groups" link if you're the owner of a group the user is in, goes to /group/user, dropdown for mutual groups to remove or to transfer ownership.
 
-- Front Page should display randomly selected 'small ads'
-- Enable Rich Text for user profiles
-- Creators of Groups need to be following automatically. Cannot unfollow?
+- Front Page needs to display 2 random non-premium ads
+- Enable Rich Text for group about_me.
+- Disable Owners from leaving Group
 - Change group ownership feature
 
 
