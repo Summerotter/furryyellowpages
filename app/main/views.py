@@ -344,7 +344,31 @@ def unfollow_group(groupname):
     current_user.unfollow_group(group)
     flash('You are no longer following %s.' % groupname)
     return redirect(url_for('.group_page', groupname=groupname))
-    
+
+@main.route('/grouppage/<groupname>/browse',methods=['GET', 'POST'])    
+def browse_group(groupname):
+    ''' '''
+    group = Group.query.filter_by(username=groupname).first()
+    if group is None:
+        flash("Invalid Group")
+        return redirect(url_for(".index"))
+    form = GroupBrowseForm()
+    options = []
+    users = False
+    media = Media.query.filter_by(visible=True).all()
+    for i in media:
+        options.append([i.id,i.username])
+    form.choice.choices = options
+    matches=[]
+    if form.validate_on_submit():
+        chosen_media = Media.query.get(form.choice.data)
+        media_users = chosen_media.members.all()
+        group_users = group.members.all()
+        for i in media_users:
+            if i in group_users:
+                matches.append(i)
+        return render_template("group_browse.html",group=group,chosen_media=chosen_media,form=form,users=matches)
+    return render_template("group_browse.html",group=group,form=form)
 ### Media ###
 
 @main.route('/media')

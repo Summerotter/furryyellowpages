@@ -82,3 +82,7 @@ class GroupEditAdmin(Form):
     
 class UpdateUserMedia(Form):
     submit = SubmitField('Submit')
+    
+class GroupBrowseForm(Form):
+    choice = SelectField('Choice', coerce=int)
+    submit = SubmitField('Submit')

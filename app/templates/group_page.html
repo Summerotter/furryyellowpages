@@ -27,6 +27,7 @@
 
         
         <p>
+            <a class="btn btn-default" href="{{ url_for('.browse_group',groupname=group.username) }}">Browse Members by Media </a>
             {% if current_user.id == group.owner_id %}
             <a class="btn btn-default" href="{{ url_for('.edit_group',groupname=group.username) }}">Edit Group </a>
             {% endif %}
