@@ -100,7 +100,7 @@ def user_media():
                 current_user.offer_media(media)
             else:
                 current_user.remove_media(media)
-        flash("Updated your media offerings")
+        flash("Changes Saved")
         return redirect(url_for('.user_media'))
     return render_template('user_options.html',media=offered_media,unoffered_media=unoffered_media,form=form)
     

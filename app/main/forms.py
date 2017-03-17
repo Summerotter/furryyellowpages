@@ -19,7 +19,7 @@ class EditProfileForm(Form):
     
     name = StringField('Real name', validators=[Length(1, 24)])
     location = StringField('Location', validators=[Length(0, 64)])
-    about_me = TextAreaField('About me')
+    about_me = PageDownField('About me')
     short_ad = TextAreaField('Short Ad',validators=[Length(0,140)])
     weasyl = StringField('Weasyl Account Name', validators=[Length(0, 128)])
     furaffinity = StringField('Furaffinity Account Name', validators=[Length(0, 128)])
@@ -37,7 +37,7 @@ class EditProfileAdminForm(Form):
     role = SelectField('Role', coerce=int)
     name = StringField('Real name', validators=[Length(1, 24)])
     location = StringField('Location', validators=[Length(0, 64)])
-    about_me = TextAreaField('About me')
+    about_me = PageDownField('About me')
     short_ad = TextAreaField('Short Ad',validators=[Length(0,140)])
     weasyl = StringField('Weasyl Account Name', validators=[Length(0, 128)])
     furaffinity = StringField('Furaffinity Account Name', validators=[Length(0, 128)])

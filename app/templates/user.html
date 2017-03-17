@@ -13,7 +13,13 @@
         {% if current_user.is_administrator() %}
         <p><a href="mailto:{{ user.email }}">{{ user.email }}</a></p>
         {% endif %}
-        {% if user.about_me %}<p>{{ user.about_me }}</p>{% endif %}
+        {% if user.about_me %}
+            {% if user.about_me_html %}
+                {{ user.about_me_html | safe }}
+            {% else %}
+                <p>{{ user.about_me }}</p>
+            {% endif %}
+        {% endif %}
 <!--        <p>Member since {{ moment(user.member_since).format('L') }}. Last seen {{ moment(user.last_seen).fromNow() }}.</p>
         <p>{{ user.posts.count() }} blog posts.<br> -->
         {{ user.group_membership.count() }} group memberships.</p>

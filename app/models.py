@@ -81,6 +81,7 @@ class User(UserMixin, db.Model):
     name = db.Column(db.String(64))
     location = db.Column(db.String(64))
     about_me = db.Column(db.Text())
+    about_me_html = db.Column(db.Text())
     short_ad = db.Column(db.String(140))
     member_since = db.Column(db.DateTime(), default=datetime.utcnow)
     last_seen = db.Column(db.DateTime(), default=datetime.utcnow)
@@ -260,6 +261,16 @@ class User(UserMixin, db.Model):
     def remove_media(self, media):
         if media in self.media_offered:
             self.media_offered.remove(media)      
+            
+    @staticmethod
+    def on_changed_about_me(target, value, oldvalue, initiator):
+        #For about_me
+        allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
+                        'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
+                        'h1', 'h2', 'h3', 'p']
+        target.about_me_html = bleach.linkify(bleach.clean(
+            markdown(value, output_format='html'),
+            tags=allowed_tags, strip=True))
 
 
 class AnonymousUser(AnonymousUserMixin):
@@ -334,6 +345,7 @@ class Post(db.Model):
             tags=allowed_tags, strip=True))
 
 db.event.listen(Post.body, 'set', Post.on_changed_body)
+db.event.listen(User.about_me,'set',User.on_changed_about_me)
 from app import db
 from hashlib import md5
 from flask import url_for
