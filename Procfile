@@ -1,1 +1,1 @@
-web: gunicorn furryyellowpages:app
+web: gunicorn manage:app
